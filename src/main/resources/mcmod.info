@@ -1,0 +1,16 @@
+[
+{
+  "modid": "sblevelchanger",
+  "name": "Skyblock Level color changer",
+  "description": "Changes Skyblock level color client-side",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["SermisterOne"],
+  "credits": "ChatGPT to give me examples of code",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
