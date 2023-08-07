@@ -52,6 +52,7 @@ public class CommandColor extends CommandBase {
                 sender.addChatMessage(new ChatComponentText("d - \u00A7dLight Purple - " + 100));
                 sender.addChatMessage(new ChatComponentText("e - \u00A7eYellow - " + 100));
                 sender.addChatMessage(new ChatComponentText("f - \u00A7fWhite - " + 100));
+                sender.addChatMessage(new ChatComponentText("z - \u00A7zSBA Chroma(if SBA is installed) - " + 100));
         	} else {
         		sender.addChatMessage(new ChatComponentText("Usage: " + getCommandUsage(sender)));
                 sender.addChatMessage(new ChatComponentText("0 - \u00A70Black - " + Main.sblevel));
@@ -70,6 +71,7 @@ public class CommandColor extends CommandBase {
                 sender.addChatMessage(new ChatComponentText("d - \u00A7dLight Purple - " + Main.sblevel));
                 sender.addChatMessage(new ChatComponentText("e - \u00A7eYellow - " + Main.sblevel));
                 sender.addChatMessage(new ChatComponentText("f - \u00A7fWhite - " + Main.sblevel));
+                sender.addChatMessage(new ChatComponentText("z - \u00A7zSBA Chroma(if SBA is installed) - " + Main.sblevel));
         	}
             
         }

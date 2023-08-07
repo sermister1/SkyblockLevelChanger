@@ -1,6 +1,10 @@
 package com.sermister1.sblevelchanger;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.common.collect.Ordering;
 
@@ -9,52 +13,26 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class GuiTabPlayerName extends Gui {
 	public static Boolean isOnServer;
-	private int ticks;
-	//debug, made to test in live environment
+	private static int ticks;
+	//static boolean gotLevel = false;
+	static boolean gotRightBracket = false;
+	static boolean gotLeftBracket = false;
+	//failsafe for 2 methods
+	static boolean gotRightBracket1 = false;
+	static boolean gotLeftBracket1 = false;
+	String potsblevel;
 	
-    /*@SubscribeEvent
-	public void ChangeTabName(ClientChatReceivedEvent event) {
-    	IChatComponent tablistreverseeng = ChatComponentBuilder.of("")
-    			.append("[").setColor(EnumChatFormatting.DARK_GRAY)
-    			.append("162").setColor(EnumChatFormatting.DARK_GREEN)
-    			.append("] ").setColor(EnumChatFormatting.DARK_GRAY)
-    			.append("SermisterOne").setColor(EnumChatFormatting.AQUA)
-    			.build();
-		IChatComponent testicc = ChatComponentBuilder.of("Hello, world!")
-	            .setColor(EnumChatFormatting.RED)
-	            .setItalic(true)
-	            .append("Test")
-	            .setColor(EnumChatFormatting.DARK_BLUE)
-	            .build();
-		List<IChatComponent> SibList = tablistreverseeng.getSiblings();
-		SibList.get(1).setChatStyle(SibList.get(1).getChatStyle().setColor(EnumChatFormatting.AQUA));
-		Minecraft mc = Minecraft.getMinecraft();
-		Ordering<NetworkPlayerInfo> TabField = ReflectionHelper.getPrivateValue(GuiPlayerTabOverlay.class, null, "field_175252_a");
-		NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
-        List<NetworkPlayerInfo> fullList = TabField.sortedCopy(netHandler.getPlayerInfoMap());
-        GuiPlayerTabOverlay tabList = Minecraft.getMinecraft().ingameGUI.getTabList();
-        System.out.println(Integer.toString(fullList.size()));
-        fullList.forEach((loadedPlayer) -> {
-			loadedPlayer.setDisplayName(tablistreverseeng);
-		});
-        Collection<NetworkPlayerInfo> playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
-		List<NetworkPlayerInfo> playerList = new ArrayList(playerCollection);
-    	playerList.forEach((loadedPlayer) -> {
-			System.out.println(loadedPlayer.getGameProfile().getName());
-    	});
-	}*/
-    
     @SubscribeEvent
     public void onClientConnectedToServer(ClientConnectedToServerEvent event) {
         // Check if the player is connected to a server
@@ -68,243 +46,148 @@ public class GuiTabPlayerName extends Gui {
     }
     //actual code that will be run on Hypixel
     //Uses static sibling indexes, I'm lazy to do adjustable indexes, hope Hypixel doesn't make any shit with tab displaynames
+    //Now should work with dynamic siblings
     //didn't want to use reflection but fuck it
+    //omg it works without reflection?
     //handle command run
     public void TabListDisplayNameCommand() {
+    if(isOnServer == true) {
     	Minecraft mc = Minecraft.getMinecraft();
-    	//System.out.println("fired");
-    	Ordering<NetworkPlayerInfo> TabField = ReflectionHelper.getPrivateValue(GuiPlayerTabOverlay.class, null, "field_175252_a");
-		NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
-        List<NetworkPlayerInfo> fullList = TabField.sortedCopy(netHandler.getPlayerInfoMap());
-    	if(isOnServer == true) {
-    		//playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
-    		//List<NetworkPlayerInfo> playerList = new ArrayList(playerCollection);
-        	fullList.forEach((loadedPlayer) -> {
-        		if(loadedPlayer.getDisplayName() != null) {
-	    			if(loadedPlayer.getDisplayName().toString().contains(Minecraft.getMinecraft().thePlayer.getName())) {
-	    				IChatComponent playerDisplayName = loadedPlayer.getDisplayName();
-	    				//System.out.println(playerDisplayName);
-	    				
-	    				List<IChatComponent> Siblings = playerDisplayName.getSiblings();
-	    				switch(Config.levelColor.toLowerCase()) {
-	    				case("0"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLACK));
-	    					break;
-	    				case("1"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_BLUE));
-	    					break;
-	    				case("2"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GREEN));
-	    					break;
-	    				case("3"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
-	    					break;
-	    				case("4"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_RED));
-	    					break;
-	    				case("5"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE));
-	    					break;
-	    				case("6"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GOLD));
-	    					break;
-	    				case("7"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GRAY));
-	    					break;
-	    				case("8"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GRAY));
-	    					break;
-	    				case("9"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLUE));
-	    					break;
-	    				case("a"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GREEN));
-	    					break;
-	    				case("b"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.AQUA));
-	    					break;
-	    				case("c"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.RED));
-	    					break;
-	    				case("d"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.LIGHT_PURPLE));
-	    					break;
-	    				case("e"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.YELLOW));
-	    					break;
-	    				case("f"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.WHITE));
-	    					break;
-	    				}
-    				}
-    			}
-    			
-    		});
-    	}
+    	//gotLevel = false;
+    	gotRightBracket1 = false;
+    	gotLeftBracket1 = false;
     	
-    }
-    //handle server nick update
-    @SubscribeEvent
-    public void TabListDisplayName(PlayerEvent.NameFormat event) {
-    	Minecraft mc = Minecraft.getMinecraft();
-    	//System.out.println("fired");
-    	Ordering<NetworkPlayerInfo> TabField = ReflectionHelper.getPrivateValue(GuiPlayerTabOverlay.class, null, "field_175252_a");
-		NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
-        List<NetworkPlayerInfo> fullList = TabField.sortedCopy(netHandler.getPlayerInfoMap());
-    	//System.out.println("fired");
-    	//Collection<NetworkPlayerInfo> playerCollection;
-    	if(isOnServer == true) {
-    		//playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
-    		//List<NetworkPlayerInfo> playerList = new ArrayList(playerCollection);
-        	fullList.forEach((loadedPlayer) -> {
-        		if(loadedPlayer.getDisplayName() != null) {
-	    			if(loadedPlayer.getDisplayName().toString().contains(Minecraft.getMinecraft().thePlayer.getName())) {
-	    				IChatComponent playerDisplayName = loadedPlayer.getDisplayName();
-	    				//System.out.println(playerDisplayName+" NameFormat");
+    	Collection<NetworkPlayerInfo> playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+    	NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
+    	List<NetworkPlayerInfo> fullList = new ArrayList(playerCollection);
+    	
+        fullList.forEach((loadedPlayer) -> {
+    		if(loadedPlayer.getDisplayName() != null) {
+    			
+    			if(loadedPlayer.getDisplayName().getFormattedText().contains(Minecraft.getMinecraft().thePlayer.getName())) {
     				
-	    				List<IChatComponent> Siblings = playerDisplayName.getSiblings();
-	    				switch(Config.levelColor.toLowerCase()) {
-	    				case("0"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLACK));
-	    					break;
-	    				case("1"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_BLUE));
-	    					break;
-	    				case("2"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GREEN));
-	    					break;
-	    				case("3"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
-	    					break;
-	    				case("4"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_RED));
-	    					break;
-	    				case("5"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE));
-	    					break;
-	    				case("6"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GOLD));
-	    					break;
-	    				case("7"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GRAY));
-	    					break;
-	    				case("8"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GRAY));
-	    					break;
-	    				case("9"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLUE));
-	    					break;
-	    				case("a"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GREEN));
-	    					break;
-	    				case("b"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.AQUA));
-	    					break;
-	    				case("c"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.RED));
-	    					break;
-	    				case("d"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.LIGHT_PURPLE));
-	    					break;
-	    				case("e"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.YELLOW));
-	    					break;
-	    				case("f"):
-	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.WHITE));
-	    					break;
-	    				}
+    				String tabDisplayName = loadedPlayer.getDisplayName().getFormattedText();
+    				if (tabDisplayName.contains("[") && tabDisplayName.contains("]")) {
+    					
+    					potsblevel = tabDisplayName.substring(tabDisplayName.indexOf("[") + 1, tabDisplayName.indexOf("]"));
+    				
+    					if (potsblevel.contains("VIP") || potsblevel.contains("MVP") || potsblevel.contains("ADMIN")
+    							|| potsblevel.contains("OWNER") || potsblevel.contains("GM") || potsblevel.contains("MOJANG")
+    							|| potsblevel.contains("EVENTS") || potsblevel.contains("MCP") || potsblevel.contains("NPC")
+    							|| potsblevel.contains("YOUTUBE") || potsblevel.contains("PIG")) { // RIP Technoblade
+    					} else {
+    						
+    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
+    						if(potsblevel.length() > 3) {
+    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
+    						
+    						}
+    						
+    						if (NumberUtils.isNumber(potsblevel)) {
+    							IChatComponent chatMessageComponent = new ChatComponentText("");
+    							List<IChatComponent> Siblings = loadedPlayer.getDisplayName().getSiblings();
+    							
+    							for(int i = 0; i < Siblings.size(); i++) {
+    								
+    								if(Siblings.get(i).getUnformattedText().equals("[")) {
+    									gotLeftBracket1 = true;
+    									chatMessageComponent.appendSibling(Siblings.get(i));
+    								} else if(Siblings.get(i).getUnformattedText().equals("]")) {
+    									gotRightBracket1 = true;
+    									chatMessageComponent.appendSibling(Siblings.get(i));
+    								} else if(gotLeftBracket1 == true && gotRightBracket1 == false && Siblings.get(i).getUnformattedText().equals(potsblevel)) {
+    									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
+    									sbLevelChatStyle.setColor(null);
+    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+    									chatMessageComponent.appendSibling(sbLevelComp);
+    								} else if(Siblings.get(i).getUnformattedText().length() > 2 && Siblings.get(i).getUnformattedText().substring(2).equals(potsblevel)) {
+    									String psbl = Siblings.get(i).getUnformattedText().substring(2);
+    									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
+    									sbLevelChatStyle.setColor(null);
+    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+    									chatMessageComponent.appendSibling(sbLevelComp);
+    								} else {
+    									chatMessageComponent.appendSibling(Siblings.get(i));
+    								}
+    							}
+    							loadedPlayer.setDisplayName(chatMessageComponent);
+    						}
+    					}
     				}
     			}
-    			
-    		});
+    		}
+    	});
     	}
-    	
     }
     //fire name change event every 0.2s
     @SubscribeEvent
     public void TabListDisplayNameEvery4ticks(PlayerTickEvent event) {
-    	if (event.phase == TickEvent.Phase.END) {
+    if(isOnServer == true) {
             ticks++;
             if (ticks >= 4) {
             	Minecraft mc = Minecraft.getMinecraft();
-            	//System.out.println("fired");
-            	Ordering<NetworkPlayerInfo> TabField = ReflectionHelper.getPrivateValue(GuiPlayerTabOverlay.class, null, "field_175252_a");
-        		NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
-                List<NetworkPlayerInfo> fullList = TabField.sortedCopy(netHandler.getPlayerInfoMap());
-            	//System.out.println("fired");
-            	//Collection<NetworkPlayerInfo> playerCollection;
-            	if(isOnServer == true) {
-            		//playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
-            		//List<NetworkPlayerInfo> playerList = new ArrayList(playerCollection);
-                	fullList.forEach((loadedPlayer) -> {
-                		if(loadedPlayer.getDisplayName() != null) {
-        	    			if(loadedPlayer.getDisplayName().toString().contains(Minecraft.getMinecraft().thePlayer.getName())) {
-        	    				IChatComponent playerDisplayName = loadedPlayer.getDisplayName();
-        	    				//System.out.println(playerDisplayName+" NameFormat");
-            				
-        	    				List<IChatComponent> Siblings = playerDisplayName.getSiblings();
-        	    				switch(Config.levelColor.toLowerCase()) {
-        	    				case("0"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLACK));
-        	    					break;
-        	    				case("1"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_BLUE));
-        	    					break;
-        	    				case("2"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GREEN));
-        	    					break;
-        	    				case("3"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
-        	    					break;
-        	    				case("4"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_RED));
-        	    					break;
-        	    				case("5"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE));
-        	    					break;
-        	    				case("6"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GOLD));
-        	    					break;
-        	    				case("7"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GRAY));
-        	    					break;
-        	    				case("8"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.DARK_GRAY));
-        	    					break;
-        	    				case("9"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.BLUE));
-        	    					break;
-        	    				case("a"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.GREEN));
-        	    					break;
-        	    				case("b"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.AQUA));
-        	    					break;
-        	    				case("c"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.RED));
-        	    					break;
-        	    				case("d"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.LIGHT_PURPLE));
-        	    					break;
-        	    				case("e"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.YELLOW));
-        	    					break;
-        	    				case("f"):
-        	    					Siblings.get(1).setChatStyle(Siblings.get(1).getChatStyle().setColor(EnumChatFormatting.WHITE));
-        	    					break;
-        	    				}
-            				}
-            			}
+            	//gotLevel = false;
+            	gotRightBracket = false;
+            	gotLeftBracket = false;
+            	
+            	Collection<NetworkPlayerInfo> playerCollection = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+            	NetHandlerPlayClient netHandler = mc.thePlayer.sendQueue;
+            	List<NetworkPlayerInfo> fullList = new ArrayList(playerCollection);
+            	
+                fullList.forEach((loadedPlayer) -> {
+            		if(loadedPlayer.getDisplayName() != null) {
             			
-            		});
-            	}
-                // Execute code every 4 ticks
-                //System.out.println("Running code every 4 ticks");
+    	    			if(loadedPlayer.getDisplayName().getFormattedText().contains(Minecraft.getMinecraft().thePlayer.getName())) {
+    	    				
+    	    				String tabDisplayName = loadedPlayer.getDisplayName().getFormattedText();
+    	    				if (tabDisplayName.contains("[") && tabDisplayName.contains("]")) {
+    	    					
+    	    					potsblevel = tabDisplayName.substring(tabDisplayName.indexOf("[") + 1, tabDisplayName.indexOf("]"));
+    	    				
+    	    					if (potsblevel.contains("VIP") || potsblevel.contains("MVP") || potsblevel.contains("ADMIN")
+    	    							|| potsblevel.contains("OWNER") || potsblevel.contains("GM") || potsblevel.contains("MOJANG")
+    	    							|| potsblevel.contains("EVENTS") || potsblevel.contains("MCP") || potsblevel.contains("NPC")
+    	    							|| potsblevel.contains("YOUTUBE") || potsblevel.contains("PIG")) { // RIP Technoblade
+    	    					} else {
+    	    						
+    	    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
+    	    						if(potsblevel.length() > 3) {
+    	    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
+    	    						
+    	    						}
+    	    						if (NumberUtils.isNumber(potsblevel)) {
+    	    							IChatComponent chatMessageComponent = new ChatComponentText("");
+    	    							List<IChatComponent> Siblings = loadedPlayer.getDisplayName().getSiblings();
+    	    							
+    	    							for(int i = 0; i < Siblings.size(); i++) {
+    	    								if(Siblings.get(i).getUnformattedText().equals("[")) {
+    	    									gotLeftBracket = true;
+    	    									chatMessageComponent.appendSibling(Siblings.get(i));
+    	    								} else if(Siblings.get(i).getUnformattedText().equals("]")) {
+    	    									gotRightBracket = true;
+    	    									chatMessageComponent.appendSibling(Siblings.get(i));
+    	    								} else if(gotLeftBracket == true && gotRightBracket == false && Siblings.get(i).getUnformattedText().equals(potsblevel)) {
+    	    									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
+    	    									sbLevelChatStyle.setColor(null);
+    	    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+    	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+    	    									chatMessageComponent.appendSibling(sbLevelComp);
+    	    								} else {
+    	    									chatMessageComponent.appendSibling(Siblings.get(i));
+    	    								}		
+    	    							}
+    	    							loadedPlayer.setDisplayName(chatMessageComponent);
+    	    						}
+    	    					}
+    	    				}
+    	    			}
+            		}
+    	    	});
                 ticks = 0;
-            }
+            	}
+                // Execute code every 4 ticks  
         }
-    	//event.
-    	
-    	
     }
 }
