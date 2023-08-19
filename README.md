@@ -11,7 +11,7 @@ Features:
 How to use: 
 <ul>
 
-   <li>/clc \<color\> </li>
+   <li>/clc \<color\>  </li>
 
    <li>color: any color letter of Minecraft letter codes(0 for black, 1 for dark blue etc)</li>
 
