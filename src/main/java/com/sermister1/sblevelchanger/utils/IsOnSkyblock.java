@@ -22,11 +22,13 @@ public class IsOnSkyblock {
     }
     public boolean isOnSkyblock() {
     	for (String skyblock : SKYBLOCK_IN_ALL_LANGUAGES) {
-            if (sidebarObjective.getDisplayName().contains(skyblock)) {
-            	return true;
-                //foundSkyblockTitle = true;
-                //break;
-            }
+    		if(sidebarObjective != null) {
+	            if (sidebarObjective.getDisplayName().contains(skyblock)) {
+	            	return true;
+	                //foundSkyblockTitle = true;
+	                //break;
+	            }
+    		}
             
         }
     	return false;
