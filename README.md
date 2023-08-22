@@ -3,7 +3,7 @@ Mod to change Skyblock Level color in Hypixel Skyblock.
 Features:
 <ul>
 
-  <li>Support for stock Minecraft colors and SKyblock Addons chroma too; </li>
+  <li>Support for stock Minecraft colors and Skyblock Addons chroma too; </li>
   
   <li>Support both chat and tab list; </li>
 
@@ -11,9 +11,19 @@ Features:
 How to use: 
 <ul>
 
-   <li>/clc 	&lt;color&gt; </li>
+   <li>/clc 	&lt;color&gt; [custom level] </li>
+
+   <li>/clc 	reset</li>
+
+</ul>
+
+<ul>
 
    <li>color: any color letter of Minecraft letter codes(0 for black, 1 for dark blue etc)</li>
+
+   <li>custom level: Any string/number you want to be in place of Skyblock level</li>
+
+   <li>reset - reset colors to their default state</li>
 
    <li>Full list of colors can be got from running command without arguments</li>
 
