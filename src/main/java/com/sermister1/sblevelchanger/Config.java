@@ -6,6 +6,8 @@ import net.minecraftforge.common.config.Configuration;
 public class Config {
 	public static Configuration config;
 	public static String levelColor;
+	public static String levelNumber;
+	public static String prevLevel;
 	public static void loadConfig(File configFile) {
 	    config = new Configuration(configFile);
 
@@ -13,8 +15,8 @@ public class Config {
 	    config.load();
 
 	    // Read the value of "levelcolor" from the config file or assign a default value
-	    levelColor = config.getString("levelcolor", Configuration.CATEGORY_GENERAL, "f", "The color for the level");
-	    
+	    levelColor = config.getString("levelcolor", Configuration.CATEGORY_GENERAL, "", "The color for the level");
+	    levelNumber = config.getString("levelnumber", Configuration.CATEGORY_GENERAL, "", "Level number");
 	    // Save the configuration file
 	    config.save();
 	    if (config.hasChanged()) {

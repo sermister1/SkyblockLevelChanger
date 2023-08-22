@@ -6,21 +6,16 @@ import java.util.List;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.google.common.collect.Ordering;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class GuiTabPlayerName extends Gui {
 	public static Boolean isOnServer;
@@ -32,6 +27,10 @@ public class GuiTabPlayerName extends Gui {
 	static boolean gotRightBracket1 = false;
 	static boolean gotLeftBracket1 = false;
 	String potsblevel;
+	static boolean dosmth;
+	static boolean dosmth1;
+	//static boolean hasJoined = false;
+	static IChatComponent oldDisplayName;
 	
     @SubscribeEvent
     public void onClientConnectedToServer(ClientConnectedToServerEvent event) {
@@ -52,6 +51,7 @@ public class GuiTabPlayerName extends Gui {
     //handle command run
     public void TabListDisplayNameCommand() {
     if(isOnServer == true) {
+    	dosmth1 = true;
     	Minecraft mc = Minecraft.getMinecraft();
     	//gotLevel = false;
     	gotRightBracket1 = false;
@@ -78,12 +78,25 @@ public class GuiTabPlayerName extends Gui {
     					} else {
     						
     						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
-    						if(potsblevel.length() > 3) {
-    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
-    						
+    						if(potsblevel.substring(potsblevel.length() - 2).equals("\u00A7r")) {
+    							potsblevel = potsblevel.substring(0, potsblevel.length() - 2);
     						}
+    						if(potsblevel.length() > 2 && potsblevel.substring(0, 2).contains("\u00A7")) {
+    							potsblevel = potsblevel.substring(2);
+    						}
+    						//if(potsblevel.length() > 3 && potsblevel != Config.levelNumber ) {
+    						//	potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
     						
-    						if (NumberUtils.isNumber(potsblevel)) {
+    						//}
+    						
+    						if (NumberUtils.isNumber(potsblevel) || potsblevel.equals(Config.prevLevel)) {
+    							
+    							/*if(Main.hasJoined = false) {
+    		    					oldDisplayName = loadedPlayer.getDisplayName();
+    		    					Main.hasJoined = true;
+    		    				}*/
+    							
+    							
     							IChatComponent chatMessageComponent = new ChatComponentText("");
     							List<IChatComponent> Siblings = loadedPlayer.getDisplayName().getSiblings();
     							
@@ -98,21 +111,56 @@ public class GuiTabPlayerName extends Gui {
     								} else if(gotLeftBracket1 == true && gotRightBracket1 == false && Siblings.get(i).getUnformattedText().equals(potsblevel)) {
     									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
     									sbLevelChatStyle.setColor(null);
-    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+    									/*IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
     									sbLevelComp.setChatStyle(sbLevelChatStyle);
-    									chatMessageComponent.appendSibling(sbLevelComp);
+    									chatMessageComponent.appendSibling(sbLevelComp);*/
+    									if(!Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+	    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    									chatMessageComponent.appendSibling(sbLevelComp);
+	    									
+    									} else if(!Config.levelColor.equals("") && !Config.levelNumber.equals("")) {
+    										IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + Config.levelNumber);
+	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    									chatMessageComponent.appendSibling(sbLevelComp);
+	    									
+    									} else if(Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+    										dosmth1 = false;
+    										
+    									}
     								} else if(Siblings.get(i).getUnformattedText().length() > 2 && Siblings.get(i).getUnformattedText().substring(2).equals(potsblevel)) {
     									String psbl = Siblings.get(i).getUnformattedText().substring(2);
     									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
-    									sbLevelChatStyle.setColor(null);
-    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+    									//sbLevelChatStyle.setColor(null);
+    									/*IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
     									sbLevelComp.setChatStyle(sbLevelChatStyle);
-    									chatMessageComponent.appendSibling(sbLevelComp);
+    									chatMessageComponent.appendSibling(sbLevelComp);*/
+    									if(!Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+	    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    									chatMessageComponent.appendSibling(sbLevelComp);
+	    									
+    									} else if(!Config.levelColor.equals("") && !Config.levelNumber.equals("")) {
+    										IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + Config.levelNumber);
+	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    									chatMessageComponent.appendSibling(sbLevelComp);
+	    									
+    									} else if(Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+    										dosmth1 = false;
+    										
+    									}
     								} else {
     									chatMessageComponent.appendSibling(Siblings.get(i));
     								}
     							}
-    							loadedPlayer.setDisplayName(chatMessageComponent);
+    							if(dosmth1) {
+    								loadedPlayer.setDisplayName(chatMessageComponent);
+    								
+    							} else {
+    								//loadedPlayer.setDisplayName(oldDisplayName);
+    								//Minecraft.getMinecraft().thePlayer.addChatMessage(oldDisplayName);
+    								
+    							}
     						}
     					}
     				}
@@ -127,6 +175,7 @@ public class GuiTabPlayerName extends Gui {
     if(isOnServer == true) {
             ticks++;
             if (ticks >= 4) {
+            	dosmth = true;
             	Minecraft mc = Minecraft.getMinecraft();
             	//gotLevel = false;
             	gotRightBracket = false;
@@ -153,11 +202,18 @@ public class GuiTabPlayerName extends Gui {
     	    					} else {
     	    						
     	    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
-    	    						if(potsblevel.length() > 3) {
+    	    						if(potsblevel.length() > 3 && Config.levelColor != "") {
     	    						potsblevel = potsblevel.substring(2, potsblevel.length() - 2);
     	    						
     	    						}
-    	    						if (NumberUtils.isNumber(potsblevel)) {
+    	    						if(potsblevel.length() > 2 && potsblevel.substring(potsblevel.length() - 2).equals("\u00A7r")) {
+    	    							potsblevel = potsblevel.substring(0, potsblevel.length() - 2);
+    	    						}
+    	    						
+    	    						if (NumberUtils.isNumber(potsblevel) || potsblevel.equals(Config.prevLevel)) {
+    	    							
+    	    							
+    	    							
     	    							IChatComponent chatMessageComponent = new ChatComponentText("");
     	    							List<IChatComponent> Siblings = loadedPlayer.getDisplayName().getSiblings();
     	    							
@@ -171,14 +227,25 @@ public class GuiTabPlayerName extends Gui {
     	    								} else if(gotLeftBracket == true && gotRightBracket == false && Siblings.get(i).getUnformattedText().equals(potsblevel)) {
     	    									ChatStyle sbLevelChatStyle = Siblings.get(i).getChatStyle();
     	    									sbLevelChatStyle.setColor(null);
-    	    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
-    	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
-    	    									chatMessageComponent.appendSibling(sbLevelComp);
+    	    									if(!Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+	    	    									IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + potsblevel);
+	    	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    	    									chatMessageComponent.appendSibling(sbLevelComp);
+    	    									} else if(!Config.levelColor.equals("") && !Config.levelNumber.equals("")) {
+    	    										IChatComponent sbLevelComp = new ChatComponentText("\u00A7"+Config.levelColor + Config.levelNumber);
+	    	    									sbLevelComp.setChatStyle(sbLevelChatStyle);
+	    	    									chatMessageComponent.appendSibling(sbLevelComp);
+    	    									} else if(Config.levelColor.equals("") && Config.levelNumber.equals("")) {
+    	    										dosmth = false;
+    	    									}
     	    								} else {
     	    									chatMessageComponent.appendSibling(Siblings.get(i));
     	    								}		
     	    							}
-    	    							loadedPlayer.setDisplayName(chatMessageComponent);
+    	    							if(dosmth) {
+    	    								loadedPlayer.setDisplayName(chatMessageComponent);
+    	    								
+    	    							}
     	    						}
     	    					}
     	    				}
